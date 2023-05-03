@@ -47,10 +47,6 @@ const App = () => {
       <p>good {good}</p>
       <p>neutral {neutral}</p>
       <Statistics good={good} neutral={neutral} bad={bad}/>
-      {/* <p>bad {bad}</p>
-      <p>all {Statistics.total}</p>
-      <p>average {Statistics.average}</p>
-      <p>positive {Statistics.positivePercentage}</p> */}
     </div>
   )
 }

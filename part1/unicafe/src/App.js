@@ -53,7 +53,11 @@ const App = () => {
   }
 
   const mostVotedIndex = () => {
-    return votes.indexOf(Math.max(...votes))
+    if (Math.max(...votes) === 0) {
+      return <p>No votes yet</p>;
+    } else {
+      return votes.indexOf(Math.max(...votes))
+    }
   }
 
   return (

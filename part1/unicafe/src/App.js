@@ -9,7 +9,12 @@ const StatisticsLine = (props) => {
   // const average = total / 3
   // const positivePercentage = good / total
   return (
-    <p>{text} {value}</p>
+    <tbody>
+      <tr>
+        <td>{text}</td>
+        <td>{value}</td>
+      </tr>
+    </tbody>
   )
 }
 
@@ -29,12 +34,14 @@ if (total === 0) {
   return(
     <div>
       <h1>statistics</h1>
+      <table>
       <StatisticsLine text="good" value ={good} />
       <StatisticsLine text="neutral" value ={neutral} />
       <StatisticsLine text="bad" value ={bad} />
       <StatisticsLine text="total" value ={total} />
       <StatisticsLine text="average" value ={average} />
       <StatisticsLine text="positive" value ={positivePercentage} />
+      </table>
     </div>
   )
   }

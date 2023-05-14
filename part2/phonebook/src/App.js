@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import contactService from './services/contacts'
 
 const Filter = ({filterSearch, setFilterSearch}) => {
 
@@ -33,9 +34,9 @@ const PersonForm = ({people, setPeople}) => {
   }
   
   const addContact = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     const nameExists = newName ? people.some(person => person.name === newName) : false;
-
+  
     if (nameExists){
       alert(`${newName} is already added to phonebook`);
     } else {
@@ -44,12 +45,11 @@ const PersonForm = ({people, setPeople}) => {
         number: newNumber,
         id: people.length + 1
       }
-      axios
-    .post('http://localhost:3001/people', contactObject)
-    .then(response => {
-      setPeople(people.concat(contactObject))
-      setNewName('')
-      setNewNumber('')
+      contactService.create(contactObject)
+      .then(response => {
+        setPeople(people.concat(contactObject))
+        setNewName('')
+        setNewNumber('')
       })
     }
   }
@@ -92,18 +92,14 @@ const People = ({ people }) => {
 const App = () => {
   const [filterSearch, setFilterSearch] = useState("")
   const [people, setPeople] = useState([])
-
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/people')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPeople(response.data)
+ 
+  useEffect(() => {
+    contactService
+      .getAll()
+      .then(initialContacts => {
+        setPeople(initialContacts)
       })
-  }
-  
-  useEffect(hook, [])
+  }, [])
 
   const sortedPeople = () => {
     if (!people) return []

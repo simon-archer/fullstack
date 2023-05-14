@@ -75,7 +75,7 @@ const PersonForm = ({people, setPeople}) => {
   )
 }
 
-const People = ({ people }) => {
+const People = ({ people, deleteContact }) => {
 
   if (!people) return
 
@@ -83,7 +83,7 @@ const People = ({ people }) => {
 
   return (
       <>
-        {people .map(person => <p key={person.id}>{person.name + ' ' + person.number}</p>)}
+        {people .map(person => <p key={person.id}>{person.name + ' ' + person.number} <button onClick={() => deleteContact(person)}>Delete</button></p>)}
       </>
     )
   }
@@ -100,6 +100,19 @@ const App = () => {
         setPeople(initialContacts)
       })
   }, [])
+
+  const deleteContact = (person) => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      contactService
+        .deleteContact(person.id)
+        .then(() => {
+          setPeople(people.filter((p) => p.id !== person.id));
+        })
+        .catch((error) => {
+          console.error('There was an error!', error);
+        })
+    }
+}
 
   const sortedPeople = () => {
     if (!people) return []
@@ -119,7 +132,7 @@ const App = () => {
       <h2>Add a new contact</h2>
       <PersonForm people={people} setPeople={setPeople}/>
       <h2>Numbers</h2>
-      <People people={sortedPeople()} />
+      <People people={sortedPeople()} deleteContact={deleteContact}/>
     </div>
   )
 }

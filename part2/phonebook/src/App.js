@@ -33,12 +33,30 @@ const PersonForm = ({people, setPeople}) => {
     setNewNumber(event.target.value)
   }
   
+  const getIdByName = (name) => {
+    const person = people.find(person => person.name === name)
+    return person ? person.id : null
+  }
+
   const addContact = (event) => {
-    event.preventDefault();
-    const nameExists = newName ? people.some(person => person.name === newName) : false;
+    event.preventDefault()
+    const nameExists = newName ? people.some(person => person.name === newName) : false
   
     if (nameExists){
-      alert(`${newName} is already added to phonebook`);
+      const confirmResult = window.confirm (`${newName} is already added to phonebook, replace the old number with the new one?`)
+       if (confirmResult) {
+        const personId = getIdByName(newName)
+        contactService.update(personId, 
+          {
+            name: newName,
+            number: newNumber
+          })
+          .then(updatedPerson => {
+            setPeople(people.map(person => person.id !== updatedPerson.id ? person : updatedPerson))
+          })
+    } else {
+      
+      }
     } else {
       const contactObject = {
         name: newName,

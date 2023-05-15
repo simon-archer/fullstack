@@ -18,7 +18,7 @@ const Filter = ({filterSearch, setFilterSearch}) => {
   )
 }
 
-const PersonForm = ({people, setPeople, setUserMessage}) => {
+const PersonForm = ({people, setPeople, setUserMessage, setMessageType}) => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
 
@@ -39,11 +39,11 @@ const PersonForm = ({people, setPeople, setUserMessage}) => {
 
   const addContact = (event) => {
     event.preventDefault()
-    const nameExists = newName ? people.some(person => person.name === newName) : false
+    const nameExists = people.some(person => person.name === newName)
   
     if (nameExists){
       const confirmResult = window.confirm (`${newName} is already added to phonebook, replace the old number with the new one?`)
-       if (confirmResult) {
+      if (confirmResult) {
         const personId = getIdByName(newName)
         contactService.update(personId, 
           {
@@ -52,15 +52,14 @@ const PersonForm = ({people, setPeople, setUserMessage}) => {
           })
           .then(updatedPerson => {
             setPeople(people.map(person => person.id !== updatedPerson.id ? person : updatedPerson))
+            setUserMessage(
+              `${newName} number was updated`
+            )
+            setMessageType('userMessage')
+            setTimeout(() => {
+              setUserMessage(null)
+            }, 5000)
           })
-          setUserMessage(
-            `${newName} number was updated`
-          )
-          setTimeout(() => {
-            setUserMessage(null)
-          }, 5000)
-    } else {
-      
       }
     } else {
       const contactObject = {
@@ -73,13 +72,14 @@ const PersonForm = ({people, setPeople, setUserMessage}) => {
         setPeople(people.concat(contactObject))
         setNewName('')
         setNewNumber('')
+        setUserMessage(
+          `Added ${newName}`
+        )
+        setMessageType('userMessage')
+        setTimeout(() => {
+          setUserMessage(null)
+        }, 5000)
       })
-      setUserMessage(
-        `Added ${newName}`
-      )
-      setTimeout(() => {
-        setUserMessage(null)
-      }, 5000)
     }
   }
 
@@ -122,7 +122,8 @@ const App = () => {
   const [filterSearch, setFilterSearch] = useState("")
   const [people, setPeople] = useState([])
   const [userMessage, setUserMessage] = useState(null)
- 
+  const [messageType, setMessageType] = useState(null) 
+
   useEffect(() => {
     contactService
       .getAll()
@@ -130,19 +131,20 @@ const App = () => {
         setPeople(initialContacts)
       })
   }, [])
-
+  
   const deleteContact = (person) => {
     if (window.confirm(`Delete ${person.name}?`)) {
       contactService
         .deleteContact(person.id)
         .then(() => {
-          setPeople(people.filter((p) => p.id !== person.id));
+          setPeople(people.filter((p) => p.id !== person.id))
         })
         .catch((error) => {
-          console.error('There was an error!', error);
+          setUserMessage(`Information of ${person.name} has already been removed from server`)
+          setMessageType('errorMessage')
         })
     }
-}
+  }
 
   const sortedPeople = () => {
     if (!people) return []
@@ -158,10 +160,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={userMessage} />
+      <Notification message={userMessage} type={messageType} /> 
       <Filter filterSearch={filterSearch} setFilterSearch={setFilterSearch} people={people} />
       <h2>Add a new contact</h2>
-      <PersonForm people={people} setPeople={setPeople} setUserMessage={setUserMessage}/>
+      <PersonForm people={people} setPeople={setPeople} setUserMessage={setUserMessage} setMessageType={setMessageType} />
       <h2>Numbers</h2>
       <People people={sortedPeople()} deleteContact={deleteContact}/>
     </div>

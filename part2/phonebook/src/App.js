@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import contactService from './services/contacts'
+import Notification from './components/Notification'
 
 const Filter = ({filterSearch, setFilterSearch}) => {
 
@@ -8,7 +8,6 @@ const Filter = ({filterSearch, setFilterSearch}) => {
     console.log(event.target.value)
     setFilterSearch(event.target.value)
   }
-  console.log("here?")
   return (
     <div>
       Filter shown with: <input
@@ -19,7 +18,7 @@ const Filter = ({filterSearch, setFilterSearch}) => {
   )
 }
 
-const PersonForm = ({people, setPeople}) => {
+const PersonForm = ({people, setPeople, setUserMessage}) => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
 
@@ -54,6 +53,12 @@ const PersonForm = ({people, setPeople}) => {
           .then(updatedPerson => {
             setPeople(people.map(person => person.id !== updatedPerson.id ? person : updatedPerson))
           })
+          setUserMessage(
+            `${newName} number was updated`
+          )
+          setTimeout(() => {
+            setUserMessage(null)
+          }, 5000)
     } else {
       
       }
@@ -69,6 +74,12 @@ const PersonForm = ({people, setPeople}) => {
         setNewName('')
         setNewNumber('')
       })
+      setUserMessage(
+        `Added ${newName}`
+      )
+      setTimeout(() => {
+        setUserMessage(null)
+      }, 5000)
     }
   }
 
@@ -110,6 +121,7 @@ const People = ({ people, deleteContact }) => {
 const App = () => {
   const [filterSearch, setFilterSearch] = useState("")
   const [people, setPeople] = useState([])
+  const [userMessage, setUserMessage] = useState(null)
  
   useEffect(() => {
     contactService
@@ -146,9 +158,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={userMessage} />
       <Filter filterSearch={filterSearch} setFilterSearch={setFilterSearch} people={people} />
       <h2>Add a new contact</h2>
-      <PersonForm people={people} setPeople={setPeople}/>
+      <PersonForm people={people} setPeople={setPeople} setUserMessage={setUserMessage}/>
       <h2>Numbers</h2>
       <People people={sortedPeople()} deleteContact={deleteContact}/>
     </div>

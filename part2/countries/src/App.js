@@ -3,10 +3,16 @@ import axios from 'axios';
 
 const CountryData = ({ country }) => (
   <div>
-    <h2>{country.name}</h2>
+    <h2>{country.name.common}</h2>
     <p>Capital: {country.capital}</p>
-    <p>Population: {country.population}</p>
-    <img src={country.flag} alt={`flag of ${country.name}`} width="100" />
+    <p>Area: {country.area}</p>
+    <p><b>Languages:</b></p>
+      <ul>
+      {Object.values(country.languages).map((language, index) => (
+        <li key={index}>{language}</li>
+      ))}
+      </ul>
+    <img src={country.flags.png} width="200" />
   </div>
 );
 
@@ -38,7 +44,7 @@ const App = () => {
     content = filteredCountries.map(country => <p key={country.cca3}>{country.name.common}</p>)
   } else if (filteredCountries.length === 1) 
   {
-    content = <CountryData country={filteredCountries[0]} />
+    content = <CountryData country={filteredCountries[0]}/>
   }
 
   return (

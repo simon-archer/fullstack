@@ -41,7 +41,7 @@ const App = () => {
     content = <p>Too many matches, specify another filter</p>
   } else if (filteredCountries.length > 1) 
   {
-    content = filteredCountries.map(country => <p key={country.cca3}>{country.name.common}</p>)
+    content = filteredCountries.map(country => <p key={country.cca3}>{country.name.common}<button onClick={() => setSearch(country.name.common)}>Show</button></p>)
   } else if (filteredCountries.length === 1) 
   {
     content = <CountryData country={filteredCountries[0]}/>

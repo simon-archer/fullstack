@@ -1,16 +1,17 @@
-# fly.toml app configuration file generated for falling-cloud-372 on 2023-05-19T07:33:47+03:00
+# fly.toml app configuration file generated for old-river-1367 on 2023-05-19T08:34:35+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "falling-cloud-372"
-primary_region = "ams"
+app = "old-river-1367"
+primary_region = "arn"
 
 [env]
-  PORT = "8080" # add this
+  PORT = "8080"
+
 
 [http_service]
-  internal_port = 3000
+  internal_port = 8080
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true

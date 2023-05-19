@@ -4,6 +4,7 @@ const cors = require('cors')
 
 app.use(cors())
 app.use(express.json())
+app.use(express.static('build'))
 
 let notes = [
   {
@@ -42,8 +43,8 @@ app.post('/api/notes', (request, response) => {
   const body = request.body
 
   if (!body.content) {
-    return response.status(400).json({ 
-      error: 'content missing' 
+    return response.status(400).json({
+      error: 'content missing'
     })
   }
 
@@ -79,7 +80,26 @@ app.delete('/api/notes/:id', (request, response) => {
   response.status(204).end()
 })
 
-const PORT = 3001
+app.put('/api/notes/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const body = request.body
+  const note = notes.find(note => note.id === id)
+
+  if (note) {
+    const updatedNote = {
+      ...note,
+      important: body.important
+    }
+
+    notes = notes.map(n => n.id !== id ? n : updatedNote)
+
+    response.json(updatedNote)
+  } else {
+    response.status(404).end()
+  }
+})
+
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

@@ -13,29 +13,30 @@ const url =
 mongoose.set('strictQuery', false)
 mongoose.connect(url)
 
-const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+const noteSchema = new mongoose.Schema({
+    content: String,
+    date: Date,
+    important: Boolean,
 })
 
-const Person = mongoose.model('Contact', personSchema)
+const Note = mongoose.model('Note', noteSchema)
 
-const person = new Person({
-    name: process.argv[3],
-    number: process.argv[4],
+const note = new Note({
+    content: 'Mongoose makes things easy',
+    date: new Date(),
+    important: true,
 })
 
-if (process.argv.length < 4) {
-    Person.find({}).then(persons => {
-        console.log('Phonebook:')
-        persons.forEach(person => {
-            console.log(person.name + ' ' + person.number)
-        })
-        mongoose.connection.close()
+/*
+note.save().then(result => {
+    console.log('note saved!')
+    mongoose.connection.close()
+})
+*/
+
+Note.find({}).then(result => {
+    result.forEach(note => {
+        console.log(note)
     })
-} else {
-    person.save().then(result => {
-        console.log(`Added ${process.argv[3]} number ${process.argv[4]} to phonebook`)
-        mongoose.connection.close()
-    })
-}
+    mongoose.connection.close()
+})

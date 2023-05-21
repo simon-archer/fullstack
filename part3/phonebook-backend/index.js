@@ -54,21 +54,21 @@ const generateId = () => {
 app.post('/api/people', (request, response) => {
   const body = request.body
 
-  if (!body.content) {
+  if (!body.name || !body.number) {
     return response.status(400).json({
       error: 'content missing'
     })
   }
 
-  const person = {
+  const person = new Contacts({
     name: body.name,
     number: body.number,
     id: generateId(),
-  }
+  })
 
-  people = people.concat(person)
-
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 app.get('/api/people/:id', (request, response) => {

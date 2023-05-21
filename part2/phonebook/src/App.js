@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import contactService from './services/contacts'
 import Notification from './components/Notification'
 
-const Filter = ({filterSearch, setFilterSearch}) => {
+const Filter = ({ filterSearch, setFilterSearch }) => {
 
   const handleFilterInput = (event) => {
     console.log(event.target.value)
@@ -18,7 +18,7 @@ const Filter = ({filterSearch, setFilterSearch}) => {
   )
 }
 
-const PersonForm = ({people, setPeople, setUserMessage, setMessageType}) => {
+const PersonForm = ({ people, setPeople, setUserMessage, setMessageType }) => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
 
@@ -31,7 +31,7 @@ const PersonForm = ({people, setPeople, setUserMessage, setMessageType}) => {
     console.log(event.target.value)
     setNewNumber(event.target.value)
   }
-  
+
   const getIdByName = (name) => {
     const person = people.find(person => person.name === name)
     return person ? person.id : null
@@ -40,12 +40,12 @@ const PersonForm = ({people, setPeople, setUserMessage, setMessageType}) => {
   const addContact = (event) => {
     event.preventDefault()
     const nameExists = people.some(person => person.name === newName)
-  
-    if (nameExists){
-      const confirmResult = window.confirm (`${newName} is already added to phonebook, replace the old number with the new one?`)
+
+    if (nameExists) {
+      const confirmResult = window.confirm(`${newName} is already added to phonebook, replace the old number with the new one?`)
       if (confirmResult) {
         const personId = getIdByName(newName)
-        contactService.update(personId, 
+        contactService.update(personId,
           {
             name: newName,
             number: newNumber
@@ -68,39 +68,39 @@ const PersonForm = ({people, setPeople, setUserMessage, setMessageType}) => {
         id: people.length + 1
       }
       contactService.create(contactObject)
-      .then(response => {
-        setPeople(people.concat(contactObject))
-        setNewName('')
-        setNewNumber('')
-        setUserMessage(
-          `Added ${newName}`
-        )
-        setMessageType('userMessage')
-        setTimeout(() => {
-          setUserMessage(null)
-        }, 5000)
-      })
+        .then(response => {
+          setPeople(people.concat(contactObject))
+          setNewName('')
+          setNewNumber('')
+          setUserMessage(
+            `Added ${newName}`
+          )
+          setMessageType('userMessage')
+          setTimeout(() => {
+            setUserMessage(null)
+          }, 5000)
+        })
     }
   }
 
   return (
     <form onSubmit={addContact}>
-        <div>
-          Name: <input 
-            value={newName}
-            onChange={handleNameInput}
-          />  
-        </div>
-        <div>
-          Number: <input 
-            value={newNumber}
-            onChange={handleNumberInput}
-          />    
-        </div>
-        <div>
-          <button type="submit">Add</button>
-        </div>
-      </form>
+      <div>
+        Name: <input
+          value={newName}
+          onChange={handleNameInput}
+        />
+      </div>
+      <div>
+        Number: <input
+          value={newNumber}
+          onChange={handleNumberInput}
+        />
+      </div>
+      <div>
+        <button type="submit">Add</button>
+      </div>
+    </form>
   )
 }
 
@@ -111,18 +111,18 @@ const People = ({ people, deleteContact }) => {
   console.log(people)
 
   return (
-      <>
-        {people .map(person => <p key={person.id}>{person.name + ' ' + person.number} <button onClick={() => deleteContact(person)}>Delete</button></p>)}
-      </>
-    )
-  }
-  
+    <>
+      {people.map(person => <p key={person.id}>{person.name + ' ' + person.number} <button onClick={() => deleteContact(person)}>Delete</button></p>)}
+    </>
+  )
+}
+
 
 const App = () => {
   const [filterSearch, setFilterSearch] = useState("")
   const [people, setPeople] = useState([])
   const [userMessage, setUserMessage] = useState(null)
-  const [messageType, setMessageType] = useState(null) 
+  const [messageType, setMessageType] = useState(null)
 
   useEffect(() => {
     contactService
@@ -131,7 +131,7 @@ const App = () => {
         setPeople(initialContacts)
       })
   }, [])
-  
+
   const deleteContact = (person) => {
     if (window.confirm(`Delete ${person.name}?`)) {
       contactService
@@ -148,24 +148,24 @@ const App = () => {
 
   const sortedPeople = () => {
     if (!people) return []
-    
+
     const sortedPeople = people.filter(person => {
       return person.name.toLowerCase().includes(filterSearch.toLowerCase())
     })
     console.log("sortedPeople: ", sortedPeople)
-    
+
     return sortedPeople || []
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={userMessage} type={messageType} /> 
+      <Notification message={userMessage} type={messageType} />
       <Filter filterSearch={filterSearch} setFilterSearch={setFilterSearch} people={people} />
       <h2>Add a new contact</h2>
       <PersonForm people={people} setPeople={setPeople} setUserMessage={setUserMessage} setMessageType={setMessageType} />
       <h2>Numbers</h2>
-      <People people={sortedPeople()} deleteContact={deleteContact}/>
+      <People people={sortedPeople()} deleteContact={deleteContact} />
     </div>
   )
 }

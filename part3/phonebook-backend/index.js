@@ -1,45 +1,47 @@
+const Contacts = require('./models/contact')
 const express = require('express')
 const app = express()
 const cors = require('cors')
+require('dotenv').config()
 
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
 app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
 
+const PORT = process.env.PORT
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
+
 let people = [
-  {
-    "name": "Arto Hellas",
-    "number": "39-44-5323523",
-    "id": 1
-  },
-  {
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523",
-    "id": 2
-  },
-  {
-    "name": "Dan Abramov",
-    "number": "12-43-234345",
-    "id": 3
-  },
-  {
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122",
-    "id": 4
-  },
-  {
-    "name": "Sine",
-    "number": "1234567890",
-    "id": 5
-  }
+
 ]
 
 app.get('/', (req, res) => {
   res.send('<h1>phonebook backend</h1>')
 })
 
-app.get('/api/people', (req, res) => {
-  res.json(people)
+app.get('/api/people', (request, response) => {
+  Contacts.find({})
+    .then(people => {
+      console.log('Fetched people:', people)
+      response.json(people)
+    })
+    .catch(error => {
+      console.log('Error fetching people:', error)
+      response.status(500).json({ error: 'Failed to fetch people' })
+    })
 })
 
 const generateId = () => {
@@ -82,15 +84,11 @@ app.get('/api/people/:id', (request, response) => {
   response.json(person)
 })
 
+app.use(unknownEndpoint)
+
 app.delete('/api/people/:id', (request, response) => {
   const id = Number(request.params.id)
   people = people.filter(person => person.id !== id)
 
   response.status(204).end()
-})
-
-
-const PORT = process.env.PORT || 3001
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
 })

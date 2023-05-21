@@ -1,35 +1,52 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const mongoose = require('mongoose')
+const Note = require('./models/note')
 
 app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
 
+const url = process.env.MONGODB_URI
+const PORT = process.env.PORT
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
+
+console.log('connecting to', url)
+
+mongoose.connect(url)
+  .then(result => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.log('error connecting to MongoDB:', error.message)
+  })
+
 let notes = [
   {
-    id: 1,
     content: "HTML is easy",
+    date: new Date(),
     important: true
   },
   {
-    id: 2,
     content: "Browser can execute only JavaScript",
-    important: false
+    date: new Date(),
+    important: false,
   },
   {
-    id: 3,
     content: "GET and POST are the most important methods of HTTP protocol",
+    date: new Date(),
     important: true
   }
 ]
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello World!</h1>')
-})
-
-app.get('/api/notes', (req, res) => {
-  res.json(notes)
+app.get('/api/notes', (request, response) => {
+  Note.find({}).then(notes => {
+    response.json(notes)
+  })
 })
 
 const generateId = () => {
@@ -97,9 +114,4 @@ app.put('/api/notes/:id', (request, response) => {
   } else {
     response.status(404).end()
   }
-})
-
-const PORT = process.env.PORT || 3001
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
 })

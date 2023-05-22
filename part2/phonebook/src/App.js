@@ -65,11 +65,10 @@ const PersonForm = ({ people, setPeople, setUserMessage, setMessageType }) => {
       const contactObject = {
         name: newName,
         number: newNumber,
-        id: people.length + 1
       }
       contactService.create(contactObject)
         .then(response => {
-          setPeople(people.concat(contactObject))
+          setPeople(people.concat(response))
           setNewName('')
           setNewNumber('')
           setUserMessage(
@@ -138,6 +137,8 @@ const App = () => {
         .deleteContact(person.id)
         .then(() => {
           setPeople(people.filter((p) => p.id !== person.id))
+          setUserMessage(`Deleted ${person.name}`) // success message
+          setMessageType('userMessage')
         })
         .catch((error) => {
           setUserMessage(`Information of ${person.name} has already been removed from server`)

@@ -1,8 +1,9 @@
-const Contacts = require('./models/contact')
 const express = require('express')
 const app = express()
 const cors = require('cors')
 require('dotenv').config()
+
+const Contacts = require('./models/contact')
 
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
@@ -12,25 +13,24 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
+
 app.use(cors())
 app.use(express.json())
+app.use(requestLogger)
 app.use(express.static('build'))
-
-const PORT = process.env.PORT
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
-
-let people = [
-
-]
-
-app.get('/', (req, res) => {
-  res.send('<h1>phonebook backend</h1>')
-})
 
 app.get('/api/people', (request, response) => {
   Contacts.find({})
@@ -44,13 +44,6 @@ app.get('/api/people', (request, response) => {
     })
 })
 
-const generateId = () => {
-  const maxId = people.length > 0
-    ? Math.max(...people.map(n => n.id))
-    : 0
-  return maxId + 1
-}
-
 app.post('/api/people', (request, response) => {
   const body = request.body
 
@@ -62,8 +55,7 @@ app.post('/api/people', (request, response) => {
 
   const person = new Contacts({
     name: body.name,
-    number: body.number,
-    id: generateId(),
+    number: body.number
   })
 
   person.save().then(savedPerson => {
@@ -71,24 +63,47 @@ app.post('/api/people', (request, response) => {
   })
 })
 
-app.get('/api/people/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = people.find(person => person.id === id)
+app.get('/api/people/:id', (request, response, next) => {
+  Contacts.findById(request.params.id)
+    .then(result => {
+      if (result) {
+        response.json(result)
+      } else {
+        response.status(404).json({ error: 'Entry not found' })
+      }
+    })
+    .catch(error => next(error))
+})
 
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
+app.delete('/api/people/:id', (request, response, next) => {
+  console.log(request.params)
+  Contacts.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
+})
+
+app.put('/api/people/:id', (request, response, next) => {
+  const body = request.body
+  console.log('Request Params:', request.params)
+
+  const person = {
+    name: body.name,
+    number: body.number
   }
 
-  response.json(person)
+  Contacts.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 app.use(unknownEndpoint)
+app.use(errorHandler)
 
-app.delete('/api/people/:id', (request, response) => {
-  const id = Number(request.params.id)
-  people = people.filter(person => person.id !== id)
-
-  response.status(204).end()
+const PORT = process.env.PORT
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
 })

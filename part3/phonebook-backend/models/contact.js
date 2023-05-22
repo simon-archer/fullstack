@@ -16,8 +16,23 @@ mongoose.connect(url)
     })
 
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        minLength: 3,
+        required: true
+    },
+    number: {
+        type: String,
+        required: true,
+        validate: {
+            validator: function (v) {
+                const numberRegex = /^(\d{2,3})-(\d{5,})$/;
+                const match = v.match(numberRegex);
+                return (match !== null && (match[1].length + match[2].length >= 8));
+            },
+            message: props => `Number ${props.value} is not valid! Number must have 8 digitits and be in a XX-XXXXXX or XXX-XXXXX format`
+        }
+    },
 })
 
 personSchema.set('toJSON', {

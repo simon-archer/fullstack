@@ -8,27 +8,30 @@ if (process.argv.length < 3) {
 const password = process.argv[2]
 
 const url =
-    `mongodb+srv://simonarcher:${password}@cluster0.npm2bkv.mongodb.net/noteApp?retryWrites=true&w=majority`
+    `mongodb://fullstack:${password}@ds161224.mlab.com:61224/fullstack2019-notes`
 
-mongoose.set('strictQuery', false)
-mongoose.connect(url)
+mongoose.connect(url, { useNewUrlParser: true })
 
-const noteSchema = new mongoose.Schema({
+const Note = mongoose.model('Note', {
     content: String,
+    date: Date,
     important: Boolean,
 })
 
-const Note = mongoose.model('Note', noteSchema)
+const note = new Note({
+    content: 'Promise auttaa asynkronisissa operaatiossa',
+    date: new Date(),
+    important: false,
+})
 
-// const note = new Note({
-//     content: 'HTML is Easy',
-//     important: true,
-// })
+if (false) {
+    note.save().then(response => {
+        console.log('note saved!')
+        mongoose.connection.close()
+    })
+}
 
-// note.save().then(result => {
-//     console.log('note saved!')
-//     mongoose.connection.close()
-// })
+
 
 Note.find({}).then(result => {
     result.forEach(note => {

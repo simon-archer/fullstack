@@ -41,6 +41,26 @@ const PersonForm = ({ people, setPeople, setUserMessage, setMessageType }) => {
     event.preventDefault()
     const nameExists = people.some(person => person.name === newName)
 
+    if (newName.trim().length < 3) {
+      setUserMessage("Name must be at least 3 characters long")
+      setMessageType('errorMessage')
+      setTimeout(() => {
+        setUserMessage(null)
+      }, 5000)
+      return
+    }
+
+    const numberRegex = /^\d{2,3}-\d{5,}$/
+    const match = newNumber.match(numberRegex)
+    if (!match || (match && match[0].length < 8)) {
+      setUserMessage("Number must have 8 digitits and be in a XX-XXXXXX or XXX-XXXXX format")
+      setMessageType('errorMessage')
+      setTimeout(() => {
+        setUserMessage(null)
+      }, 5000)
+      return
+    }
+
     if (nameExists) {
       const confirmResult = window.confirm(`${newName} is already added to phonebook, replace the old number with the new one?`)
       if (confirmResult) {
@@ -78,6 +98,16 @@ const PersonForm = ({ people, setPeople, setUserMessage, setMessageType }) => {
           setTimeout(() => {
             setUserMessage(null)
           }, 5000)
+        })
+        .catch(error => {
+          console.error(error)
+          if (error.response && error.response.data && error.response.data.error) {
+            setUserMessage(error.response.data.error)
+            setMessageType('errorMessage')
+            setTimeout(() => {
+              setUserMessage(null)
+            }, 5000)
+          }
         })
     }
   }

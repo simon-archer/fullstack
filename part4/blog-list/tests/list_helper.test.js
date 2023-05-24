@@ -30,7 +30,7 @@ const blogs = [
         title: 'Go',
         author: 'Dijkstra',
         url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-        likes: 0,
+        likes: 2,
         __v: 0
     }
 ]
@@ -42,7 +42,7 @@ test('dummy returns one', () => {
 
 test('Upvotes should return 8', () => {
     const result = listHelper.totalLikes(blogs)
-    expect(result).toBe(20)
+    expect(result).toBe(22)
 })
 
 test('Should return title: Go, Author: Dijkstra, Likes: 12', () => {
@@ -53,10 +53,19 @@ test('Should return title: Go, Author: Dijkstra, Likes: 12', () => {
         likes: 12
     })
 })
+
 test('Author with most blogs', () => {
     const result = listHelper.mostBlogs(blogs)
     expect(result).toEqual({
         author: 'Dijkstra',
         blogs: 2
+    })
+})
+
+test('Author with most likes', () => {
+    const result = listHelper.mostLikes(blogs)
+    expect(result).toEqual({
+        author: 'Dijkstra',
+        likes: 14
     })
 })

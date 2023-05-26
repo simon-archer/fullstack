@@ -50,6 +50,22 @@ test('Created a new blog post', async () => {
         .expect(201)
 })
 
+test('Defaulted likes to 0', async () => {
+    const payload = {
+        'title': 'Brisket',
+        'author': 'Zuccy',
+        'url': 'https://www.meta.com',
+    }
+    const response = await api
+        .post('/api/blogs')
+        .send(payload)
+        .set('Content-Type', 'application/json/')
+        .expect(201)
+
+    expect(response.body.likes).toBe(0)
+})
+
+
 afterAll(async () => {
     await mongoose.connection.close()
 })

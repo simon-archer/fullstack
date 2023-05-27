@@ -82,9 +82,9 @@ describe('DELETE /api/blogs/:id', () => {
         await Blog.deleteMany({})
 
         const blog = new Blog({
-            title: 'Test Blog',
-            author: 'Test Author',
-            url: 'http://testurl.com',
+            title: 'Meat',
+            author: 'ZuccyMarky',
+            url: 'http://meta.com',
             likes: 0
         })
 
@@ -106,6 +106,35 @@ describe('DELETE /api/blogs/:id', () => {
         const contents = blogsAtEnd.map(r => r.id)
 
         expect(contents).not.toContain(blogToDelete.id)
+    })
+})
+
+describe('UPDATE /api/blogs/:id', () => {
+    let savedBlog
+
+    beforeEach(async () => {
+        await Blog.deleteMany({})
+
+        let blog = new Blog({
+            title: 'Meata',
+            author: 'ZuccyMark',
+            url: 'http://meata.com',
+            likes: 0
+        })
+
+        savedBlog = await blog.save()
+    })
+
+    test('updates the likes of the blog post with the given id', async () => {
+        const newLikes = savedBlog.likes + 1
+
+        const updatedBlog = await api
+            .put(`/api/blogs/${savedBlog.id}`)
+            .send({ likes: newLikes })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        expect(updatedBlog.body.likes).toBe(newLikes)
     })
 })
 

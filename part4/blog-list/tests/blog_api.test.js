@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-const blog = require('../models/blog')
+const Blog = require('../models/blog')
 
 const api = supertest(app)
 
 beforeEach(async () => {
-    await blog.deleteMany({})
+    await Blog.deleteMany({})
 })
 
 test('All blogs are returned as JSON', async () => {
@@ -75,6 +75,38 @@ test('400 error on missing request data', async () => {
         .send(payload)
         .set('Content-Type', 'application/json')
         .expect(400)
+})
+
+describe('DELETE /api/blogs/:id', () => {
+    beforeEach(async () => {
+        await Blog.deleteMany({})
+
+        const blog = new Blog({
+            title: 'Test Blog',
+            author: 'Test Author',
+            url: 'http://testurl.com',
+            likes: 0
+        })
+
+        await blog.save()
+    })
+
+    test('deletes the blog post with the given id', async () => {
+        const blogsAtStart = await Blog.find({})
+        const blogToDelete = blogsAtStart[0]
+
+        await api
+            .delete(`/api/blogs/${blogToDelete.id}`)
+            .expect(204)
+
+        const blogsAtEnd = await Blog.find({})
+
+        expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
+
+        const contents = blogsAtEnd.map(r => r.id)
+
+        expect(contents).not.toContain(blogToDelete.id)
+    })
 })
 
 

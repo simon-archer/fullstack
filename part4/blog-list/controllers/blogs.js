@@ -7,8 +7,6 @@ blogRouter.get('/', async (request, response) => {
 })
 
 blogRouter.post('/', async (request, response) => {
-    console.log('This is the request body', request.body)
-
     if (!request.body.title || !request.body.url) {
         return response.status(400).send({ error: 'title or url missing' })
     } else {
@@ -21,5 +19,15 @@ blogRouter.post('/', async (request, response) => {
     }
 
 })
+
+blogRouter.delete('/:id', async (request, response) => {
+    try {
+        await Blog.findByIdAndRemove(request.params.id)
+        response.status(204).end()
+    } catch (error) {
+        response.status(400).send({ error: 'invalid id' })
+    }
+})
+
 
 module.exports = blogRouter

@@ -35,11 +35,6 @@ const blogs = [
     }
 ]
 
-test('dummy returns one', () => {
-    const result = listHelper.dummy(blogs)
-    expect(result).toBe(1)
-})
-
 test('Upvotes should return 8', () => {
     const result = listHelper.totalLikes(blogs)
     expect(result).toBe(22)

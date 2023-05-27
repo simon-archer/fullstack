@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-const Blog = require('../models/blog')
+const blog = require('../models/blog')
 
 const api = supertest(app)
 
 beforeEach(async () => {
-    await Blog.deleteMany({});
-});
+    await blog.deleteMany({})
+})
 
 test('All blogs are returned as JSON', async () => {
     await api
@@ -29,8 +29,8 @@ test('The id has been generated', async () => {
     }
     const response = await api
         .post('/api/blogs')
+        .set('Content-Type', 'application/json')
         .send(payload)
-        .set('Content-Type', 'application/json/')
         .expect(201)
 
     expect(response.body.id).toBeDefined()
@@ -45,8 +45,8 @@ test('Created a new blog post', async () => {
     }
     await api
         .post('/api/blogs')
+        .set('Content-Type', 'application/json')
         .send(payload)
-        .set('Content-Type', 'application/json/')
         .expect(201)
 })
 
@@ -58,11 +58,23 @@ test('Defaulted likes to 0', async () => {
     }
     const response = await api
         .post('/api/blogs')
+        .set('Content-Type', 'application/json')
         .send(payload)
-        .set('Content-Type', 'application/json/')
         .expect(201)
 
     expect(response.body.likes).toBe(0)
+})
+
+test('400 error on missing request data', async () => {
+    const payload = {
+        'author': 'Zuccy',
+        'likes': 4
+    }
+    await api
+        .post('/api/blogs')
+        .send(payload)
+        .set('Content-Type', 'application/json')
+        .expect(400)
 })
 
 

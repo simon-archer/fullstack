@@ -1,6 +1,8 @@
-const listHelper = require('../utils/list_helper')
+const Blog = require('../models/blog')
+const User = require('../models/user')
 
-const blogs = [
+
+const initialBlogs = [
     {
         _id: '5a422aa71b54a676234d17f8',
         title: 'Statement',
@@ -35,32 +37,27 @@ const blogs = [
     }
 ]
 
-test('Upvotes should return 8', () => {
-    const result = listHelper.totalLikes(blogs)
-    expect(result).toBe(22)
-})
+const nonExistingId = async () => {
+    const blog = new Blog({ content: 'willremovethissoon' })
+    await blog.save()
+    await blog.remove()
 
-test('Should return title: Go, Author: Dijkstra, Likes: 12', () => {
-    const result = listHelper.favoriteBlog(blogs)
-    expect(result).toEqual({
-        title: 'Go',
-        author: 'Dijkstra',
-        likes: 12
-    })
-})
+    return blog._id.toString()
+}
 
-test('Author with most blogs', () => {
-    const result = listHelper.mostBlogs(blogs)
-    expect(result).toEqual({
-        author: 'Dijkstra',
-        blogs: 2
-    })
-})
+const blogsInDb = async () => {
+    const blogs = await Blog.find({})
+    return blogs.map(blog => blog.toJSON())
+}
 
-test('Author with most likes', () => {
-    const result = listHelper.mostLikes(blogs)
-    expect(result).toEqual({
-        author: 'Dijkstra',
-        likes: 14
-    })
-})
+const usersInDb = async () => {
+    const users = await User.find({})
+    return users.map(u => u.toJSON())
+}
+
+module.exports = {
+    initialBlogs,
+    nonExistingId,
+    blogsInDb,
+    usersInDb,
+}

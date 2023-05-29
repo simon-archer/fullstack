@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNpbW9uIiwiaWQiOiI2NDc0NWI0ZmZhNzY5NmNmN2FiMWJmNTQiLCJpYXQiOjE2ODUzNDcxOTAsImV4cCI6MTY4NTM1MDc5MH0.lkW8nPAsf5W9pkOGlo9Gp-V2QolQ70A0PxsMWXq1M9Y
+
+{
+        "title": "Brisket",
+        "author": "Zuccy",
+        "url": "https://www.meta.com",
+        "likes": 3
+}

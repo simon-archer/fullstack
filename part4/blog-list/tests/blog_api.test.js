@@ -193,7 +193,7 @@ describe('when there is initially one user at db', () => {
 
         const usersAtEnd = await helper.usersInDb()
         expect(usersAtEnd).toHaveLength(usersAtStart.length)
-    }, 10000)
+    })
 })
 
 

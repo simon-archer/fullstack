@@ -4,8 +4,10 @@ const User = require('../models/user')
 const Blog = require('../models/blog')
 
 blogRouter.get('/', async (request, response) => {
-    const blogs = await Blog.find({})
-    response.json(blogs)
+    const blogs = await Blog
+        .find({})
+        .populate('user', { username: 1, name: 1 }) // Add this line to populate user info
+    response.json(blogs.map(blog => blog.toJSON()))
 })
 
 
@@ -26,8 +28,8 @@ blogRouter.post('/', async (request, response) => {
     const user = await User.findById(decodedToken.id)
 
     const blog = new Blog({
-        title: body.titl,
-        author: body.title,
+        title: body.title,
+        author: body.author,
         url: body.url,
         likes: body.likes,
         user: user._id
@@ -37,22 +39,10 @@ blogRouter.post('/', async (request, response) => {
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
 
-    response.json(savedBlog)
+    const populatedBlog = await Blog.findById(savedBlog._id).populate('user', { username: 1, name: 1 })
+
+    response.json(populatedBlog)
 })
-
-// blogRouter.post('/', async (request, response) => {
-//     if (!request.body.title || !request.body.url) {
-//         return response.status(400).send({ error: 'title or url missing' })
-//     } else {
-
-//         const blog = new Blog(request.body)
-//         const savedBlog = await blog.save()
-
-//         response.status(201).json(savedBlog)
-
-//     }
-
-// })
 
 blogRouter.delete('/:id', async (request, response) => {
     try {

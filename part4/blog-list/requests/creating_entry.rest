@@ -1,6 +1,6 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNpbW9uIiwiaWQiOiI2NDc0NjE2MjUwNmE4ZDZkNmYyNjA3N2YiLCJpYXQiOjE2ODUzNTkzNzMsImV4cCI6MTY4NTM2Mjk3M30.w6mILfXmUeiZZUnCkUev-OoE6jKeIMY7yy4gWqdEGNc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNpbW9uIiwiaWQiOiI2NDc0NjE2MjUwNmE4ZDZkNmYyNjA3N2YiLCJpYXQiOjE2ODUzNjAxMDgsImV4cCI6MTY4NTM2MzcwOH0.x1JJaHxDfdZ_VP7-lPmUUS5uBfMoyQVFnwnJBmYxRBk
 
 {
   "title": "Brisket",

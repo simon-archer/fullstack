@@ -1,6 +1,6 @@
-DELETE http://localhost:3003/api/blogs/6478908218cc91a21c72430d
+DELETE http://localhost:3003/api/blogs/6478aea830d1dce02b07781b
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNpbW9uIiwiaWQiOiI2NDc0NjE2MjUwNmE4ZDZkNmYyNjA3N2YiLCJpYXQiOjE2ODU2MjI3MjUsImV4cCI6MTY4NTYyNjMyNX0.Y1iHlcOjafmbOD6jhCzFqDDO6iV19vk9evTMf1WsVnk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNpbW9uIiwiaWQiOiI2NDc0NjE2MjUwNmE4ZDZkNmYyNjA3N2YiLCJpYXQiOjE2ODU2MzAzNzQsImV4cCI6MTY4NTYzMzk3NH0.AX4S7SWpwKlXQ8XruvXDrcJc5T4xt3ggNw2BzEq0bcQ
 
 {
   "title": "Brisket",

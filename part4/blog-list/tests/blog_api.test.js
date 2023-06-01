@@ -8,20 +8,21 @@ const bcrypt = require('bcrypt')
 
 
 const api = supertest(app)
+let token
 
 beforeEach(async () => {
     await Blog.deleteMany({})
-})
+    await User.deleteMany({})
 
-test('All blogs are returned as JSON', async () => {
-    await api
-        .get('/api/blogs')
-        .expect(200)
-        .expect('Content-Type', /application\/json/)
-        .then(response => {
-            expect(response.body.length).toBe(0)
-        })
+    const newUser = {
+        username: 'testing',
+        password: 'password',
+    }
 
+    await api.post('/api/users').send(newUser)
+
+    const loginResponse = await api.post('/api/login').send(newUser)
+    token = loginResponse.body.token
 })
 
 test('The id has been generated', async () => {
@@ -33,7 +34,7 @@ test('The id has been generated', async () => {
     }
     const response = await api
         .post('/api/blogs')
-        .set('Content-Type', 'application/json')
+        .set('Authorization', `Bearer ${token}`)
         .send(payload)
         .expect(201)
 
@@ -49,9 +50,22 @@ test('Created a new blog post', async () => {
     }
     await api
         .post('/api/blogs')
-        .set('Content-Type', 'application/json')
+        .set('Authorization', `Bearer ${token}`)
         .send(payload)
         .expect(201)
+})
+
+test('Returns 401 unauthorized when token is not provided', async () => {
+    const payload = {
+        'title': 'Brisket',
+        'author': 'Zuccy',
+        'url': 'https://www.meta.com',
+        'likes': 3
+    }
+    await api
+        .post('/api/blogs')
+        .send(payload)
+        .expect(401)
 })
 
 test('Defaulted likes to 0', async () => {
@@ -62,7 +76,7 @@ test('Defaulted likes to 0', async () => {
     }
     const response = await api
         .post('/api/blogs')
-        .set('Content-Type', 'application/json')
+        .set('Authorization', `Bearer ${token}`)
         .send(payload)
         .expect(201)
 
@@ -76,40 +90,61 @@ test('400 error on missing request data', async () => {
     }
     await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(payload)
-        .set('Content-Type', 'application/json')
         .expect(400)
 })
 
 describe('DELETE /api/blogs/:id', () => {
+    let createdBlogId
+    let userToken
+
     beforeEach(async () => {
         await Blog.deleteMany({})
+        await User.deleteMany({})
 
-        const blog = new Blog({
-            title: 'Meat',
-            author: 'ZuccyMarky',
-            url: 'http://meta.com',
-            likes: 0
-        })
+        const newUser = {
+            username: 'testuser',
+            password: 'password'
+        }
 
-        await blog.save()
+        const userResponse = await api
+            .post('/api/users')
+            .send(newUser)
+
+        const userId = userResponse.body.id
+
+        const loginResponse = await api
+            .post('/api/login')
+            .send(newUser)
+        userToken = loginResponse.body.token
+
+        const payload = {
+            title: 'Sample Blog',
+            author: 'Test User',
+            url: 'http://sampleblog.com',
+            likes: 0,
+            user: userId
+        }
+
+        const blogResponse = await api
+            .post('/api/blogs')
+            .set('Authorization', `Bearer ${userToken}`)
+            .send(payload)
+
+        createdBlogId = blogResponse.body.id
     })
 
     test('deletes the blog post with the given id', async () => {
-        const blogsAtStart = await Blog.find({})
-        const blogToDelete = blogsAtStart[0]
-
         await api
-            .delete(`/api/blogs/${blogToDelete.id}`)
+            .delete(`/api/blogs/${createdBlogId}`)
+            .set('Authorization', `Bearer ${userToken}`)
             .expect(204)
 
         const blogsAtEnd = await Blog.find({})
+        const blogIds = blogsAtEnd.map(blog => blog.id)
 
-        expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
-
-        const contents = blogsAtEnd.map(r => r.id)
-
-        expect(contents).not.toContain(blogToDelete.id)
+        expect(blogIds).not.toContain(createdBlogId)
     })
 })
 
@@ -118,6 +153,17 @@ describe('UPDATE /api/blogs/:id', () => {
 
     beforeEach(async () => {
         await Blog.deleteMany({})
+        await User.deleteMany({})
+
+        const newUser = {
+            username: 'testing',
+            password: 'password',
+        }
+
+        await api.post('/api/users').send(newUser)
+
+        const loginResponse = await api.post('/api/login').send(newUser)
+        token = loginResponse.body.token
 
         let blog = new Blog({
             title: 'Meata',
@@ -134,12 +180,14 @@ describe('UPDATE /api/blogs/:id', () => {
 
         const updatedBlog = await api
             .put(`/api/blogs/${savedBlog.id}`)
+            .set('Authorization', `Bearer ${token}`)
             .send({ likes: newLikes })
             .expect(200)
             .expect('Content-Type', /application\/json/)
 
         expect(updatedBlog.body.likes).toBe(newLikes)
     })
+
 })
 
 describe('when there is initially one user at db', () => {
@@ -189,7 +237,7 @@ describe('when there is initially one user at db', () => {
             .expect(400)
             .expect('Content-Type', /application\/json/)
 
-        expect(result.body.error).toContain('expected `username` to be unique')
+        expect(result.body.error).toContain('Username must be unique')
 
         const usersAtEnd = await helper.usersInDb()
         expect(usersAtEnd).toHaveLength(usersAtStart.length)

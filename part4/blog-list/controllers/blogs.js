@@ -17,6 +17,10 @@ blogRouter.post('/', userExtractor, async (request, response) => {
         return response.status(401).json({ error: 'token invalid' })
     }
 
+    if (!body.title || !body.url) {
+        return response.status(400).json({ message: 'Missing request data' })
+    }
+
     const blog = new Blog({
         title: body.title,
         author: body.author,
@@ -31,7 +35,8 @@ blogRouter.post('/', userExtractor, async (request, response) => {
 
     const populatedBlog = await Blog.findById(savedBlog._id).populate('user', { username: 1, name: 1 })
 
-    response.json(populatedBlog)
+    response.status(201).json(populatedBlog)
+
 })
 
 blogRouter.delete('/:id', userExtractor, async (request, response) => {

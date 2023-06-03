@@ -8,7 +8,9 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [userMessage, setUserMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
+  const [messageType, setMessageType] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -43,6 +45,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
+      setMessageType('errorMessage')
       setErrorMessage('Wrong credentials')
       setTimeout(() => {
         setErrorMessage(null)
@@ -51,15 +54,10 @@ const App = () => {
   }
 
   const handleLogout = async (event) => {
+    event.preventDefault()
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
   }
-
-  // const handleLogout = async (event) => {
-  //   event.preventDefault()
-  //   window.localStorage.removeItem('loggedNoteappUser')
-  //   setUser(null)
-  // }
 
   useEffect(() => {
     if (user) {
@@ -118,10 +116,15 @@ const App = () => {
         setTitle('')
         setAuthor('')
         setUrl('')
+        setUserMessage(`A new blog: ${title} by ${author} added`)
+        setMessageType('userMessage')
+        setTimeout(() => {
+          setUserMessage(null)
+        }, 5000)
       })
   }
 
-  const blogForm = () => (
+  const blogForm = (setUserMessage, setMessageType) => (
     <form onSubmit={addBlog}>
       <div>
         Title:
@@ -154,7 +157,7 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
-      <Notification message={errorMessage} />
+      <Notification message={userMessage || errorMessage} type={messageType} />
       {!user && loginForm()}
       {user && <div>
         <p>{user.name} logged in</p>

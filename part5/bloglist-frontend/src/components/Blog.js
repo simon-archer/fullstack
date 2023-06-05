@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, username }) => {
+const Blog = ({ blog, username, removeBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -25,15 +25,26 @@ const Blog = ({ blog, username }) => {
       setLikes(updatedBlog.likes)
     }
 
+    const handleDelete = async (blog) => {
+      if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+        try {
+          removeBlog(blog.id)
+        } catch (error) {
+          console.error('Failed to delete blog:', error)
+        }
+      }
+    }
+
     return (
       <div>
         <p>{blog.url}</p>
         <div>
           <span>{likes}</span>
-          <button onClick={handleLike}>Like</button>
+          <button onClick={handleLike}>like</button>
         </div>
         <p>{username}</p>
-      </div>
+        <button onClick={() => { handleDelete(blog) }}>delete</button>
+      </div >
     )
   }
 
@@ -44,7 +55,7 @@ const Blog = ({ blog, username }) => {
         <button onClick={ToggleDetails}>
           {showDetails ? 'hide' : 'view'}
         </button>
-        {showDetails && <BlogDetails blog={blog} username={username} />}
+        {showDetails && <BlogDetails blog={blog} username={username} removeBlog={removeBlog} />}
       </div>
 
     </div>

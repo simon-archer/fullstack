@@ -70,21 +70,30 @@ const App = () => {
     blogService
       .create(blogObject)
       .then((returnedBlog) => {
-        setBlogs(blogs.concat(returnedBlog));
-        setUserMessage(`A new blog: ${returnedBlog.title} by ${returnedBlog.author} added`);
-        setMessageType('userMessage');
+        setBlogs(blogs.concat(returnedBlog))
+        setUserMessage(`A new blog: ${returnedBlog.title} by ${returnedBlog.author} added`)
+        setMessageType('userMessage')
         setTimeout(() => {
-          setUserMessage(null);
-        }, 5000);
+          setUserMessage(null)
+        }, 5000)
       })
       .catch((error) => {
-        setErrorMessage('Failed to add a new blog');
-        setMessageType('errorMessage');
+        setErrorMessage('Failed to add a new blog')
+        setMessageType('errorMessage')
         setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
-      });
-  };
+          setErrorMessage(null)
+        }, 5000)
+      })
+  }
+
+  const removeBlog = async (id) => {
+    try {
+      await blogService.deleteBlog(id);
+      setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id));
+    } catch (error) {
+      console.error('Failed to delete blog:', error)
+    }
+  }
 
 
   return (
@@ -113,7 +122,7 @@ const App = () => {
           </Togglable>
           <div>
             {blogs.sort((a, b) => b.likes - a.likes).map((blog) => (
-              <Blog key={blog.id} blog={blog} username={username} />
+              <Blog key={blog.id} blog={blog} username={username} removeBlog={removeBlog} />
             ))}
           </div>
         </>

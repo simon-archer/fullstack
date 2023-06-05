@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import LoginForm from './components/LoginForm'
+import Togglable from './components/Togglable'
+import BlogForm from './components/BlogForm'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -77,97 +80,59 @@ const App = () => {
   }, [])
 
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
-
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url
-    }
-
+  const addBlog = (blogObject) => {
     blogService
       .create(blogObject)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setTitle('')
-        setAuthor('')
-        setUrl('')
-        setUserMessage(`A new blog: ${title} by ${author} added`)
-        setMessageType('userMessage')
+      .then((returnedBlog) => {
+        setBlogs(blogs.concat(returnedBlog));
+        setUserMessage(`A new blog: ${returnedBlog.title} by ${returnedBlog.author} added`);
+        setMessageType('userMessage');
         setTimeout(() => {
-          setUserMessage(null)
-        }, 5000)
+          setUserMessage(null);
+        }, 5000);
       })
-  }
-
-  const blogForm = (setUserMessage, setMessageType) => (
-    <form onSubmit={addBlog}>
-      <div>
-        Title:
-        <input
-          type="text"
-          value={title}
-          onChange={handleTitleChange}
-        />
-      </div>
-      <div>
-        Author:
-        <input
-          type="text"
-          value={author}
-          onChange={handleAuthorChange}
-        />
-      </div>
-      <div>
-        Url:
-        <input
-          type="text"
-          value={url}
-          onChange={handleUrlChange}
-        />
-      </div>
-      <button type="submit">create</button>
-    </form>
-  )
+      .catch((error) => {
+        setErrorMessage('Failed to add a new blog');
+        setMessageType('errorMessage');
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+      });
+  };
 
   return (
     <div>
       <h2>Blogs</h2>
       <Notification message={userMessage || errorMessage} type={messageType} />
-      {!user && loginForm()}
-      {user && <div>
-        <p>{user.name} logged in</p>
-        <button onClick={handleLogout}>Log out</button>
-        {blogForm()}
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )}
-      </div>
+      {!user &&
+        <Togglable buttonLabel="login">
+          <LoginForm
+            username={username}
+            password={password}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleSubmit={handleLogin}
+          />
+        </Togglable>
       }
+      {user && (
+        <>
+          <div>
+            <p>{user.name} logged in</p>
+            <button onClick={handleLogout}>logout</button>
+          </div>
+          <Togglable buttonLabel="create">
+            <div>
+              <BlogForm addBlog={addBlog} />
+            </div>
+          </Togglable>
+          <div>
+            {blogs.map((blog) => (
+              <Blog key={blog.id} blog={blog} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }

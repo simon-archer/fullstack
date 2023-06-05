@@ -9,6 +9,7 @@ import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [userMessage, setUserMessage] = useState(null)
@@ -85,6 +86,7 @@ const App = () => {
       });
   };
 
+
   return (
     <div>
       <h2>Blogs</h2>
@@ -107,9 +109,7 @@ const App = () => {
             <button onClick={handleLogout}>logout</button>
           </div>
           <Togglable buttonLabel="create">
-            <div>
-              <BlogForm addBlog={addBlog} />
-            </div>
+            <BlogForm addBlog={addBlog} />
           </Togglable>
           <div>
             {blogs.map((blog) => (

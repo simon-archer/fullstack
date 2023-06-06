@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../part3/notes-backend"
+		},
+		{
+			"path": "../part4/blog-list"
+		},
+		{
+			"path": "../part2/notes"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}

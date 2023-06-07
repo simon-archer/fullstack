@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios/dist/axios'
 const baseUrl = '/api/blogs'
 
 let token = null

@@ -37,7 +37,7 @@ const Blog = ({ blog, username, removeBlog }) => {
         }
 
         return (
-            <div>
+            <div className='blog'>
                 <p>{blog.url}</p>
                 <div>
                     <span>{likes}</span>

@@ -102,29 +102,29 @@ const App = () => {
             <Notification message={errorMessage} />
 
             {!user &&
-        <Togglable buttonLabel="log in">
-            <LoginForm
-                username={username}
-                password={password}
-                handleUsernameChange={({ target }) => setUsername(target.value)}
-                handlePasswordChange={({ target }) => setPassword(target.value)}
-                handleSubmit={handleLogin}
-            />
-        </Togglable>
+                <Togglable buttonLabel="log in">
+                    <LoginForm
+                        username={username}
+                        password={password}
+                        handleUsernameChange={({ target }) => setUsername(target.value)}
+                        handlePasswordChange={({ target }) => setPassword(target.value)}
+                        handleSubmit={handleLogin}
+                    />
+                </Togglable>
             }
             {user &&
-        <div>
-            <p>{user.name} logged in</p>
-            <button onClick={handleLogout}>Log out</button>
-            <Togglable buttonLabel="new note" ref={noteFormRef}>
-                <NoteForm createNote={addNote} />
-            </Togglable>
-        </div>
+                <div>
+                    <p>{user.name} logged in</p>
+                    <button onClick={handleLogout}>Log out</button>
+                    <Togglable buttonLabel="new note" ref={noteFormRef}>
+                        <NoteForm createNote={addNote} />
+                    </Togglable>
+                </div>
             }
 
             <div>
                 <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all'}
+                    show {showAll ? 'important' : 'all'}
                 </button>
             </div>
             <ul>

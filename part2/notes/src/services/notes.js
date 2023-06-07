@@ -1,4 +1,5 @@
-import axios from 'axios'
+import axios from 'axios/dist/axios'
+// import axios from 'axios'
 const baseUrl = '/api/notes'
 
 let token = null
@@ -26,5 +27,4 @@ const update = (id, newObject) => {
     return request.then(response => response.data)
 }
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default { getAll, create, update, setToken }

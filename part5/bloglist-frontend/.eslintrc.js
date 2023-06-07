@@ -22,7 +22,7 @@ module.exports = {
         'import'
     ],
     'rules': {
-        "import/no-anonymous-default-export": "off",
+        'import/no-anonymous-default-export': 'off',
         'indent': [
             'error',
             4,

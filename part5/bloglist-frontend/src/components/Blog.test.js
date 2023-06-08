@@ -1,55 +1,11 @@
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 
 import Blog from './Blog'
-import Togglable from './Togglable'
+import blogService from '../services/blogs'
 
-describe('<Togglable />', () => {
-    let container
-
-    beforeEach(() => {
-        container = render(
-            <Togglable buttonLabel="show...">
-                <div className="testDiv" >
-                    togglable content
-                </div>
-            </Togglable>
-        ).container
-    })
-
-    test('renders its children', () => {
-        screen.getByText('togglable content')
-    })
-
-    test('at start the children are not displayed', () => {
-        const div = container.querySelector('.togglableContent')
-        expect(div).toHaveStyle('display: none')
-    })
-
-    test('after clicking the button, children are displayed', async () => {
-        const user = userEvent.setup()
-        const button = screen.getByText('show...')
-        await user.click(button)
-
-        const div = container.querySelector('.togglableContent')
-        expect(div).not.toHaveStyle('display: none')
-    })
-
-    test('toggled content can be closed', async () => {
-        const user = userEvent.setup()
-
-        const button = screen.getByText('show...')
-        await user.click(button)
-
-        const closeButton = screen.getByText('cancel')
-        await user.click(closeButton)
-
-        const div = container.querySelector('.togglableContent')
-        expect(div).toHaveStyle('display: none')
-    })
-})
+jest.mock('../services/blogs')
 
 test('renders content', () => {
     const blog = {
@@ -74,4 +30,38 @@ test('renders content', () => {
 
 })
 
-test
+test('clicking the like button twice calls event handler twice', async () => {
+    const blog = {
+        title: 'Title',
+        author: 'Author',
+        url: 'Url',
+        likes: 1
+    }
+
+    const updatedBlog = {
+        ...blog,
+        likes: blog.likes + 1
+    }
+
+    const username = 'simon'
+
+    const removeBlog = jest.fn()
+
+    blogService.updateBlog = jest.fn().mockResolvedValue(updatedBlog)
+
+    render(
+        <Blog blog={blog} username={username} removeBlog={removeBlog} />
+    )
+
+    const viewButton = screen.getByText('view')
+    fireEvent.click(viewButton)
+
+    const likeButton = screen.getByText('like')
+    fireEvent.click(likeButton)
+    fireEvent.click(likeButton)
+
+    await waitFor(() => {
+        expect(blogService.updateBlog.mock.calls).toHaveLength(2)
+    })
+})
+

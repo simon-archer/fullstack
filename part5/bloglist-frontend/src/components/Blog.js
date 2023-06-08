@@ -15,15 +15,18 @@ const Blog = ({ blog, username, removeBlog }) => {
     const [showDetails, setShowDetails] = useState(false)
     const [likes, setLikes] = useState(blog.likes)
 
+
     const ToggleDetails = () => {
         setShowDetails(!showDetails)
     }
 
     const BlogDetails = ({ blog, username }) => {
 
-        const handleLike = async () => {
-            const updatedBlog = await blogService.updateBlog({ ...blog, likes: likes + 1 })
-            setLikes(updatedBlog.likes)
+        const handleLike = () => {
+            return blogService.updateBlog({ ...blog, likes: likes + 1 })
+                .then(updatedBlog => {
+                    setLikes(updatedBlog.likes)
+                })
         }
 
         const handleDelete = async (blog) => {

@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-
 import Note from './components/Note'
 import Notification from './components/Notification'
+import Footer from './components/Footer'
 import LoginForm from './components/LoginForm'
 import NoteForm from './components/NoteForm'
 import Togglable from './components/Togglable'
-
 import noteService from './services/notes'
 import loginService from './services/login'
 
@@ -58,11 +57,6 @@ const App = () => {
         }
     }
 
-    const handleLogout = async () => {
-        window.localStorage.removeItem('loggedNoteappUser')
-        setUser(null)
-    }
-
     const addNote = (noteObject) => {
         noteService
             .create(noteObject)
@@ -71,7 +65,6 @@ const App = () => {
                 noteFormRef.current.toggleVisibility()
             })
     }
-
 
     const notesToShow = showAll
         ? notes
@@ -85,9 +78,9 @@ const App = () => {
             .update(id, changedNote).then(returnedNote => {
                 setNotes(notes.map(note => note.id !== id ? note : returnedNote))
             })
-            .catch(error => {
+            .catch(() => {
                 setErrorMessage(
-                    `An error occurred: ${error.message}. Note '${note.content}' was already removed from server`
+                    `Note '${note.content}' was already removed from server`
                 )
                 setTimeout(() => {
                     setErrorMessage(null)
@@ -99,6 +92,7 @@ const App = () => {
     return (
         <div>
             <h1>Notes app</h1>
+
             <Notification message={errorMessage} />
 
             {!user &&
@@ -115,7 +109,6 @@ const App = () => {
             {user &&
                 <div>
                     <p>{user.name} logged in</p>
-                    <button onClick={handleLogout}>Log out</button>
                     <Togglable buttonLabel="new note" ref={noteFormRef}>
                         <NoteForm createNote={addNote} />
                     </Togglable>
@@ -136,6 +129,8 @@ const App = () => {
                     />
                 )}
             </ul>
+
+            <Footer />
         </div>
     )
 }

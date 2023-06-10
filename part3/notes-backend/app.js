@@ -9,7 +9,6 @@ require('express-async-errors')
 const notesRouter = require('./controllers/notes')
 const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
-const testingRouter = require('./controllers/testing')
 
 const middleware = require('./utils/middleware')
 

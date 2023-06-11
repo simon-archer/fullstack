@@ -39,11 +39,8 @@ const Blog = ({ blog, username, removeBlog }) => {
             }
         }
 
-        console.log('User Id:', blog.user.id)
-        console.log('Username:', username)
-
         return (
-            <div className='blog'>
+            <div>
                 <p>{blog.url}</p>
                 <div>
                     <span>{likes}</span>
@@ -59,7 +56,7 @@ const Blog = ({ blog, username, removeBlog }) => {
 
     return (
         <div style={blogStyle}>
-            <div>
+            <div className='blog'>
                 {blog.title} {blog.author}
                 <button onClick={ToggleDetails}>
                     {showDetails ? 'hide' : 'view'}

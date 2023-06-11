@@ -101,15 +101,15 @@ const App = () => {
             <h2>Blogs</h2>
             <Notification message={userMessage || errorMessage} type={messageType} />
             {!user &&
-        <Togglable buttonLabel="login">
-            <LoginForm
-                username={username}
-                password={password}
-                handleUsernameChange={({ target }) => setUsername(target.value)}
-                handlePasswordChange={({ target }) => setPassword(target.value)}
-                handleSubmit={handleLogin}
-            />
-        </Togglable>
+                <Togglable buttonLabel="login">
+                    <LoginForm
+                        username={username}
+                        password={password}
+                        handleUsernameChange={({ target }) => setUsername(target.value)}
+                        handlePasswordChange={({ target }) => setPassword(target.value)}
+                        handleSubmit={handleLogin}
+                    />
+                </Togglable>
             }
             {user && (
                 <>
@@ -122,7 +122,7 @@ const App = () => {
                     </Togglable>
                     <div>
                         {blogs.sort((a, b) => b.likes - a.likes).map((blog) => (
-                            <Blog key={blog.id} blog={blog} username={username} removeBlog={removeBlog} />
+                            <Blog key={blog.id} blog={blog} username={user.username} removeBlog={removeBlog} />
                         ))}
                     </div>
                 </>

@@ -29,7 +29,7 @@ describe('Blog app', function () {
       cy.get('#username').type('Silver')
       cy.get('#password').type('Wrong')
       cy.get('button[type="submit"]').click()
-      cy.contains('Wrong credentials')
+      cy.contains('Wrong credentials').should('have.css', 'color', 'rgb(255, 0, 0)');
     })
   })
 })

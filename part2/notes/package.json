@@ -23,6 +23,7 @@
     "eject": "react-scripts eject",
     "cypress:open": "cypress open",
     "server": "json-server -p3001 --watch db.json",
+    "start:test": "NODE_ENV=test node index.js"
   },
   "eslintConfig": {
     "extends": [
@@ -51,10 +52,14 @@
     ]
   },
   "devDependencies": {
+    "@babel/cli": "^7.21.5",
+    "@babel/core": "^7.22.1",
+    "@babel/preset-env": "^7.22.4",
     "@flydotio/dockerfile": "^0.2.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
+    "babel-jest": "^29.5.0",
     "cypress": "^12.14.0",
     "eslint": "^8.42.0",
     "eslint-plugin-cypress": "^2.13.3",
